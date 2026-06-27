@@ -376,8 +376,9 @@ Density is then computed at county level and ranked to isolate infrastructure ga
         center={"lat":6.5,"lon":-9.5}, zoom=5.8, height=520,
         labels={"density":"Per 10k","total":"Facilities"},
     )
-    fig_overview.update_layout(**{k:v for k,v in LAYOUT.items() if k not in ["xaxis","yaxis"]},
-                               margin=dict(l=0,r=0,t=0,b=0))
+    # Clean fix for lines 379-380
+    fig_overview.update_layout(**LAYOUT)
+    fig_overview.update_layout(margin=dict(l=0, r=0, t=0, b=0))
     st.plotly_chart(fig_overview, use_container_width=True)
 
     # Summary bar below map
