@@ -367,15 +367,24 @@ Density is then computed at county level and ranked to isolate infrastructure ga
     counties_plot["total"]   = counties_plot["county"].map(dict(zip(metrics_df["county"], metrics_df["total_facilities"])))
     geojson_data = json.loads(counties_plot.to_json())
 
-    fig_overview = px.choropleth_mapbox(
-        counties_plot, geojson=geojson_data, locations=counties_plot.index,
-        color="density", hover_name="county",
-        hover_data={"density":":.2f","total":True},
-        color_continuous_scale="Blues",
-        mapbox_style="carto-darkmatter",
-        center={"lat":6.5,"lon":-9.5}, zoom=5.8, height=520,
-        labels={"density":"Per 10k","total":"Facilities"},
-    )
+    # 1. Reset the index right before the plot so 'county' is an accessible column
+map_data = counties_plot.reset_index()
+
+fig_overview = px.choropleth_mapbox(
+    map_data, 
+    geojson=geojson_data, 
+    locations="county",               # Use the explicit column name instead of .index
+    featureidkey="properties.county",  # Tell Plotly exactly where to look in your GeoJSON
+    color="density", 
+    hover_name="county",
+    hover_data={"density": ":.2f", "total": True},
+    color_continuous_scale="Blues",
+    mapbox_style="carto-darkmatter",
+    center={"lat": 6.5, "lon": -9.5}, 
+    zoom=5.8, 
+    height=520,
+    labels={"density": "Per 10k", "total": "Facilities"},
+)
     # Clean fix for lines 379-380
     # The margin on the right will overwrite the one coming from LAYOUT
     fig_overview.update_layout(**(LAYOUT | {"margin": dict(l=0, r=0, t=0, b=0)}))
